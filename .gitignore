@@ -1,0 +1,27 @@
+
+---
+
+### `.gitignore`
+Este arquivo define os arquivos e diretórios que serão ignorados pelo Git, como dependências do ambiente virtual, arquivos temporários e logs.
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Editor configs
+*.vscode/
+*.idea/
+
+# OS-generated files
+.DS_Store
+*.log
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
