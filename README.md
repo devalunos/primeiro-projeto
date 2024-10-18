@@ -17,7 +17,7 @@ Este projeto é uma aplicação simples desenvolvida em Python usando a bibliote
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seuusuario/primeiro-projeto.git
+   git clone https://github.com/devalunos/primeiro-projeto.git
 2. Navegue até o diretório do projeto:
    cd primeiro-projeto
 Execute o script principal:
