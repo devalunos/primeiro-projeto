@@ -1,0 +1,102 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class ScheduleManager:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Gerenciador de Horários")
+        
+        self.professors = {}
+        self.auto_schedule = {}
+
+        # Criar interface
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Entrada de dados
+        self.professor_label = tk.Label(self.root, text="Professor:")
+        self.professor_label.grid(row=0, column=0)
+        self.professor_entry = tk.Entry(self.root)
+        self.professor_entry.grid(row=0, column=1)
+
+        self.discipline_label = tk.Label(self.root, text="Disciplina:")
+        self.discipline_label.grid(row=1, column=0)
+        self.discipline_entry = tk.Entry(self.root)
+        self.discipline_entry.grid(row=1, column=1)
+
+        self.aulas_label = tk.Label(self.root, text="Aulas Semanais:")
+        self.aulas_label.grid(row=2, column=0)
+        self.aulas_entry = tk.Entry(self.root)
+        self.aulas_entry.grid(row=2, column=1)
+
+        self.add_button = tk.Button(self.root, text="Adicionar Professor", command=self.add_professor)
+        self.add_button.grid(row=3, columnspan=2)
+
+        self.organize_button = tk.Button(self.root, text="Organizar Horários", command=self.organize_schedule)
+        self.organize_button.grid(row=4, columnspan=2)
+
+        self.view_button = tk.Button(self.root, text="Visualizar Horários", command=self.view_schedule)
+        self.view_button.grid(row=5, columnspan=2)
+
+        self.schedule_text = tk.Text(self.root, height=15, width=50)
+        self.schedule_text.grid(row=6, columnspan=2)
+
+    def add_professor(self):
+        professor = self.professor_entry.get()
+        discipline = self.discipline_entry.get()
+        aulas_semanais = int(self.aulas_entry.get())
+
+        if professor not in self.professors:
+            self.professors[professor] = {"disciplinas": [], "aulas_semanais": aulas_semanais}
+        
+        self.professors[professor]["disciplinas"].append(discipline)
+
+        # Limpar entradas
+        self.professor_entry.delete(0, tk.END)
+        self.discipline_entry.delete(0, tk.END)
+        self.aulas_entry.delete(0, tk.END)
+
+        messagebox.showinfo("Sucesso", f"Professor {professor} adicionado com a disciplina {discipline}!")
+
+    def organize_schedule(self):
+        # Limpar o horário automático anterior
+        self.auto_schedule.clear()
+        self.schedule_text.delete(1.0, tk.END)  # Limpar texto de horário anterior
+
+        # Organizar horários automaticamente
+        for teacher in self.professors:
+            for discipline in self.professors[teacher]["disciplinas"]:
+                aulas_disponiveis = self.professors[teacher]["aulas_semanais"] - sum(
+                    1 for v in self.auto_schedule.values() if v["professor"] == teacher
+                )
+
+                print(f"Organizando: {teacher} - {discipline} | Aulas disponíveis: {aulas_disponiveis}")
+
+                for _ in range(aulas_disponiveis):
+                    for day in range(5):  # 5 dias
+                        for period in range(4):  # 4 períodos
+                            if (day, period) not in self.auto_schedule:
+                                self.auto_schedule[(day, period)] = {"professor": teacher, "disciplina": discipline}
+                                self.schedule_text.insert(tk.END, f"Horário Automático - Dia {day + 1}, Período {period + 1}: {teacher} - {discipline}\n")
+                                print(f"Horário adicionado: Dia {day + 1}, Período {period + 1} - {teacher} - {discipline}")
+                                break
+                        else:
+                            continue
+                        break
+
+        print("Horários organizados: ", self.auto_schedule)
+
+    def view_schedule(self):
+        self.schedule_text.delete(1.0, tk.END)  # Limpar texto de visualização anterior
+
+        if not self.auto_schedule:
+            self.schedule_text.insert(tk.END, "Nenhum horário organizado ainda.\n")
+            return
+
+        for (day, period), info in self.auto_schedule.items():
+            self.schedule_text.insert(tk.END, f"Dia {day + 1}, Período {period + 1}: {info['professor']} - {info['disciplina']}\n")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ScheduleManager(root)
+    root.mainloop()
